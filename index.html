@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1" />
+<meta name="theme-color" content="#12141A" />
+<title>Cue — Stage Metronome</title>
+<link rel="stylesheet" href="./css/styles.css" />
+</head>
+<body>
+<div id="app">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true"></span>
+      <span class="brand-name">Cue</span>
+    </div>
+    <nav class="tabbar tabbar--top" aria-label="Sections">
+      <button class="tab" data-view="metronome" aria-current="page">Metronome</button>
+      <button class="tab" data-view="library">Library</button>
+      <button class="tab" data-view="setlists">Setlists</button>
+      <button class="tab" data-view="stage">Stage</button>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ===================== METRONOME VIEW ===================== -->
+    <section id="view-metronome" class="view">
+      <div class="metro-layout">
+
+        <div class="beat-ring" id="beatRing" role="img" aria-label="Beat indicator"></div>
+
+        <div class="bpm-display">
+          <button class="bpm-step" data-step="-5" aria-label="Decrease 5 BPM">−5</button>
+          <button class="bpm-step" data-step="-1" aria-label="Decrease 1 BPM">−1</button>
+          <div class="bpm-value-wrap">
+            <input id="bpmInput" class="bpm-value" type="number" min="10" max="500" value="120" inputmode="numeric" aria-label="Beats per minute" />
+            <span class="bpm-unit">BPM</span>
+          </div>
+          <button class="bpm-step" data-step="1" aria-label="Increase 1 BPM">+1</button>
+          <button class="bpm-step" data-step="5" aria-label="Increase 5 BPM">+5</button>
+        </div>
+
+        <div class="bpm-mult-row">
+          <button id="bpmHalf" class="chip-btn">÷2</button>
+          <button id="bpmDouble" class="chip-btn">×2</button>
+          <button id="tapTempo" class="tap-btn">TAP TEMPO</button>
+        </div>
+
+        <div class="control-row">
+          <label class="field">
+            <span class="field-label">Time Signature</span>
+            <select id="meterSelect" class="select"></select>
+          </label>
+          <label class="field">
+            <span class="field-label">Rhythm Pattern</span>
+            <select id="patternSelect" class="select"></select>
+          </label>
+        </div>
+
+        <div class="control-row">
+          <label class="field field--wide">
+            <span class="field-label">Volume</span>
+            <input id="volumeSlider" type="range" min="0" max="1" step="0.01" value="0.8" class="slider" />
+          </label>
+        </div>
+
+        <div class="transport">
+          <button id="startStopBtn" class="transport-btn transport-btn--start">START</button>
+        </div>
+
+        <p id="engineNotice" class="notice" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ===================== LIBRARY VIEW ===================== -->
+    <section id="view-library" class="view">
+      <div class="panel">
+        <div class="panel-header">
+          <input id="songSearch" class="search-input" type="search" placeholder="Search songs…" />
+          <button id="newSongBtn" class="primary-btn">+ New Song</button>
+        </div>
+        <ul id="songList" class="item-list"></ul>
+        <p id="songEmpty" class="empty-state">No songs yet. Add your first one for tonight's set.</p>
+      </div>
+
+      <div id="songFormOverlay" class="overlay hidden">
+        <div class="sheet">
+          <h2 id="songFormTitle">New Song</h2>
+          <form id="songForm" class="form">
+            <label class="field"><span class="field-label">Title</span>
+              <input id="songTitle" class="text-input" type="text" required maxlength="80" />
+            </label>
+            <div class="control-row">
+              <label class="field"><span class="field-label">BPM</span>
+                <input id="songBpm" class="text-input" type="number" min="10" max="500" value="120" required />
+              </label>
+              <label class="field"><span class="field-label">Time Signature</span>
+                <select id="songMeter" class="select"></select>
+              </label>
+            </div>
+            <div class="control-row">
+              <label class="field"><span class="field-label">Rhythm Pattern</span>
+                <select id="songPattern" class="select"></select>
+              </label>
+              <label class="field field--checkbox">
+                <input id="songCountIn" type="checkbox" />
+                <span class="field-label">Count-in</span>
+              </label>
+            </div>
+            <label class="field"><span class="field-label">Notes (optional)</span>
+              <textarea id="songNotes" class="text-input" rows="2" maxlength="300"></textarea>
+            </label>
+            <div class="form-actions">
+              <button type="button" id="songCancelBtn" class="secondary-btn">Cancel</button>
+              <button type="submit" class="primary-btn">Save Song</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== SETLISTS VIEW ===================== -->
+    <section id="view-setlists" class="view">
+      <div class="panel">
+        <div class="panel-header">
+          <select id="setlistSelect" class="select select--wide"></select>
+          <button id="newSetlistBtn" class="primary-btn">+ New Setlist</button>
+        </div>
+
+        <div id="setlistToolbar" class="setlist-toolbar hidden">
+          <button id="renameSetlistBtn" class="chip-btn">Rename</button>
+          <button id="deleteSetlistBtn" class="chip-btn chip-btn--danger">Delete</button>
+          <button id="addSongsBtn" class="chip-btn">+ Add Songs</button>
+          <button id="setActiveBtn" class="chip-btn chip-btn--accent">Use in Stage Mode</button>
+        </div>
+
+        <ul id="setlistSongs" class="item-list item-list--reorder"></ul>
+        <p id="setlistEmpty" class="empty-state">Create a setlist, then add songs from your library.</p>
+      </div>
+
+      <div id="addSongsOverlay" class="overlay hidden">
+        <div class="sheet">
+          <h2>Add Songs</h2>
+          <ul id="addSongsList" class="item-list"></ul>
+          <div class="form-actions">
+            <button type="button" id="addSongsDoneBtn" class="primary-btn">Done</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== STAGE MODE ===================== -->
+    <section id="view-stage" class="view">
+      <div class="stage">
+        <div class="stage-top">
+          <span id="stageSetlistName" class="stage-setlist-name">No setlist selected</span>
+          <button id="stageFullscreenBtn" class="icon-btn" aria-label="Toggle fullscreen">⤢</button>
+        </div>
+
+        <div class="stage-song">
+          <h1 id="stageSongTitle" class="stage-title">Select a setlist</h1>
+          <span id="stagePosition" class="stage-position">— / —</span>
+        </div>
+
+        <div class="stage-meta">
+          <div class="stage-bpm"><span id="stageBpm">—</span><small>BPM</small></div>
+          <div class="stage-sig"><span id="stageMeter">—</span><small>Time</small></div>
+        </div>
+
+        <div class="beat-ring beat-ring--stage" id="stageBeatRing" role="img" aria-label="Beat indicator"></div>
+
+        <div id="stageCountIn" class="count-in hidden"><span id="stageCountInNum">4</span></div>
+
+        <div class="stage-nav">
+          <button id="stagePrevBtn" class="stage-nav-btn">‹ PREV</button>
+          <button id="stageNextBtn" class="stage-nav-btn">NEXT ›</button>
+        </div>
+
+        <button id="stageStartStopBtn" class="transport-btn transport-btn--start transport-btn--stage">START</button>
+      </div>
+    </section>
+
+  </main>
+
+  <nav class="tabbar tabbar--bottom" aria-label="Sections">
+    <button class="tab" data-view="metronome" aria-current="page">
+      <span class="tab-icon">●</span><span>Metronome</span>
+    </button>
+    <button class="tab" data-view="library">
+      <span class="tab-icon">♫</span><span>Library</span>
+    </button>
+    <button class="tab" data-view="setlists">
+      <span class="tab-icon">≡</span><span>Setlists</span>
+    </button>
+    <button class="tab" data-view="stage">
+      <span class="tab-icon">▶</span><span>Stage</span>
+    </button>
+  </nav>
+
+</div>
+
+<script type="module" src="./js/app.js"></script>
+</body>
+</html>
